@@ -1,18 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-Vue.use(Router)
+import routes from './routes'
+// import history from './history'
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage')
-    },
-    {
-      path: '*',
-      redirect: '/'
-    }
-  ]
+const router = new Router({
+  mode: 'hash',
+  base: process.env.NODE_ENV === 'development' ? '/' : '/app/',
+  routes
 })
+
+Vue.use(Router)
+// history.install(router)
+
+export default router
