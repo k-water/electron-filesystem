@@ -129,7 +129,7 @@
     width: 100%;
     height: 100%;
     border-right: 1px solid #dddee1;
-    overflow-y: scroll;
+    overflow-y: auto;
     .base {
       padding-top: 10px;
     }
@@ -155,4 +155,5 @@
       padding-top: 10px;
     }
   }
+
 </style>
