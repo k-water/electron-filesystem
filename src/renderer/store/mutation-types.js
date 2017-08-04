@@ -1,0 +1,1 @@
+export const GET_FOLDER_INFO = 'GET_FOLDER_INFO'

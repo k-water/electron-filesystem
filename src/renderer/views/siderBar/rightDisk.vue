@@ -1,6 +1,5 @@
 <template>
   <div class="right-disk" v-show="show">
-  
     <Card class="card-disk">
       <div class="head-disk">
         <img :src="imgDisk" class="img-disk">
@@ -26,7 +25,6 @@
 				<p>{{diskDetails.TracksPerCylinder}}</p>
       </div>
     </Card>
-  
   </div>
 </template>
 <script>
@@ -59,7 +57,7 @@
     overflow-y: auto;
     .card-disk {
       height: 100%;
-      overflow-y: auto;      
+      overflow-y: auto;
       .head-disk {
         text-align: center;
         p {

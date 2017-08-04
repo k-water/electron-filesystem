@@ -2,7 +2,7 @@
   <div class="left-bar">
     <article class="base">
       <header class="head">
-        <Icon type="monitor" size="32" color="#3cd83c"></Icon>
+        <Icon type="monitor" size="32" color="rgb(51, 174, 252)"></Icon>
         <span class="title">系统</span>
       </header>
       <section class="info">
@@ -15,7 +15,7 @@
 
     <article class="cpus">
       <header class="head">
-        <Icon type="planet" size="32" color="#3cd83c"></Icon>
+        <Icon type="planet" size="32" color="rgb(51, 174, 252)"></Icon>
         <span class="title">CPU</span>
       </header>
       <section class="info">
@@ -29,7 +29,7 @@
 
     <article class="ram">
       <header class="head">
-        <Icon type="leaf" size="32" color="#3cd83c"></Icon>
+        <Icon type="leaf" size="32" color="rgb(51, 174, 252)"></Icon>
         <span class="title">内存RAM</span>
       </header>
       <section class="info">
@@ -41,7 +41,7 @@
 
     <article class="used">
       <header class="head">
-        <Icon type="ios-pie" size="32" color="#3cd83c"></Icon>
+        <Icon type="ios-pie" size="32" color="rgb(51, 174, 252)"></Icon>
         <span class="title">使用情况</span>
       </header>
       <section class="info">

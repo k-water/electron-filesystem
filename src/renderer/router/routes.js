@@ -9,18 +9,33 @@ const Index = resolve => {
     resolve(module)
   })
 }
+
+const Folder = resolve => {
+  import('@/views/files/folder').then(module => {
+    resolve(module)
+  })
+}
 const routes = [
   {
-    path: '/',
+    path: '/computer',
     name: 'index',
     component: Index,
     meta: {
       auth: true
-    }
+    },
+    children: [{
+      path: '/computer/:id',
+      name: 'folder',
+      component: Folder
+    }]
   }, {
     path: '/login',
     name: 'login',
     component: Login
+  },
+  {
+    path: '*',
+    redirect: '/computer'
   }
 ]
 
