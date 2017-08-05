@@ -1,6 +1,13 @@
 <template>
   <div class="folder">
-    <Icon type="arrow-left-c" @click.native="back"></Icon>
+    <div class="back" @click="back">
+      <Icon 
+        type="ios-arrow-back" 
+        size="28"
+        color="rgba(51, 174, 252, 0.5)"
+      >
+      </Icon>
+    </div>
     <Table 
       highlight-row 
       :columns="columns" 
@@ -13,20 +20,33 @@
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
-  // import { readFolder } from '@/common/js/file'
-
+  import { openFile, readFolder } from '@/common/js/file'
   export default {
     computed: {
       ...mapGetters([
         'folderInfo'
-      ])
+      ]),
+      disk () {
+        let path = this.$route.fullPath.split('/')
+        let realPath = path[path.length - 1].split('\\')
+        return realPath[0]
+      }
     },
     created () {
       this.reload()
     },
-
+    watch: {
+      '$route' () {
+        if (this.$route.name === 'folder') {
+          readFolder(this.$route.params.id + '\\\\').then(res => {
+            this.getFolderInfo(res)
+          })
+        }
+      }
+    },
     data () {
       return {
+        allPath: [],
         columns: [
           {
             title: '名称',
@@ -89,16 +109,26 @@
         else return size.toFixed(2) + 'B'
       },
       reload () {
-        if (!this.$router.id) {
+        if (this.$route.params.id) {
           this.$router.replace({
             name: 'index'
           })
         }
       },
       back () {
-        this.$router.back()
+        this.$router.go(-1)
       },
-      forwardFolder (row) {
+      async forwardFolder (row) {
+        if (row.type === '文件夹') {
+          await readFolder(row.path + '\\\\').then(res => {
+            this.getFolderInfo(res)
+          })
+          this.$router.push({
+            path: `/computer/${row.path}`
+          })
+        } else {
+          openFile(row.path)
+        }
       }
     }
   }
@@ -107,10 +137,21 @@
   .folder {
     height: 100%;
     overflow-y: auto;
+    position: relative;
     .t-folder {
       height: 100%;
-      overflow-y: auto;
+      // margin-top: 4%;
     }
+  }
+  .back {
+    padding: 0 5px 0 5px;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    line-height: 32px;
+    position: absolute;
+    top: 8px;
+    z-index: 100;
   }
   .img-folder {
     width: 16px !important;

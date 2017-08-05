@@ -3,7 +3,10 @@
     <Col span="6">
       <left-bar></left-bar>
     </Col>
-    <Col span="14">
+    <Col span="12" class="container">
+      <div class="header">
+        <header>文件管理器</header>
+      </div>
       <Table
         size="small" 
         :columns="columns" 
@@ -11,13 +14,18 @@
         @on-row-click="info"
         @on-row-dblclick="forward"
         v-show="$route.name === 'index'"
+        class="t-folder"
       >
       </Table>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+
+      <transition>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
+      </transition>
+
     </Col>
-    <Col span="4">
+    <Col span="6">
       <right-bar 
         :data="diskDetail" 
         :show="diskDetail.Access !== undefined"
@@ -98,18 +106,21 @@
       info (row) {
         this.diskDetail = row
       },
-      forward (row) {
+      async forward (row) {
         if (row.Description === '光盘') return
         let path = row.Name + '\\\\'
-        let nextPath
-        readFolder(path).then(res => {
+        await readFolder(path).then(res => {
           this.getFolderInfo(res)
-          let arr = res[0].path.split('\\')
-          nextPath = arr[arr.length - 1]
         })
         this.$router.push({
-          path: `/computer/${nextPath}`
+          path: `/computer/${path}`
         })
+      }
+    },
+    watch: {
+      '$route' () {
+        if (this.$route.name === 'index') {
+        }
       }
     },
     created () {
@@ -124,7 +135,28 @@
     height: 100%;
     overflow-y: auto;
   }
-  .ivu-col-span-4 {
+  .ivu-col-span-6 {
     height: 100%;
+  }
+  .header {
+    padding: 10px;
+    header {
+      font: bold 20px/150% 'Microsoft Yahei';
+    }
+  }
+  .container {
+    position: relative;
+    .t-folder {
+      // padding-top: 4%;
+    }
+    .footer-bread {
+      position: fixed;
+      left: 26%;
+      top: 10px;
+      z-index: 100;
+    }
+  }
+  .ivu-table-wrapper {
+    border: none !important;
   }
 </style>

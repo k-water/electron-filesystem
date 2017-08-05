@@ -1,5 +1,6 @@
 import { icon } from '@/common/js/icon'
-
+import { exec } from 'child_process'
+import Vue from 'vue'
 const fs = require('fs')
 // const path = require('path')
 
@@ -22,6 +23,17 @@ export function readFolder (path) {
     }).catch(err => {
       console.log(err)
     })
+  })
+}
+
+export function openFile (path) {
+  exec(`${path}`, function (error, stdout, stderr) {
+    if (error !== null) {
+      Vue.prototype.$Notice.error({
+        title: '暂不支持打开该文件',
+        duration: 2
+      })
+    }
   })
 }
 
