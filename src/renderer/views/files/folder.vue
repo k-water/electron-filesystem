@@ -1,5 +1,5 @@
 <template>
-  <div class="folder">
+  <div class="folder" id="folder" @contextmenu="createNewOne($route.params.id)">
     <div class="back" @click="back">
       <Icon 
         type="ios-arrow-back" 
@@ -11,7 +11,7 @@
     <Table 
       highlight-row 
       :columns="columns" 
-      :data="folderInfo"
+      :data="tableData"
       class="t-folder"
       @on-row-dblclick="forwardFolder"
     >
@@ -20,7 +20,7 @@
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
-  import { openFile, readFolder } from '@/common/js/file'
+  import { openFile, readFolder, createNewFolder, createNewTxt } from '@/common/js/file'
   export default {
     computed: {
       ...mapGetters([
@@ -35,6 +35,9 @@
     created () {
       this.reload()
     },
+    mounted () {
+      this.tableData = this.folderInfo
+    },
     watch: {
       '$route' () {
         if (this.$route.name === 'folder') {
@@ -42,11 +45,12 @@
             this.getFolderInfo(res)
           })
         }
+        this.tableData = this.folderInfo
       }
     },
     data () {
       return {
-        allPath: [],
+        tableData: [],
         columns: [
           {
             title: '名称',
@@ -129,6 +133,42 @@
         } else {
           openFile(row.path)
         }
+      },
+
+      createNewOne (path) {
+        const MenuItem = this.$electron.remote.MenuItem
+        const Menu = this.$electron.remote.Menu
+        const menu1 = new Menu()
+        let me = this
+        let newFile = new MenuItem({
+          label: '新建',
+          accelerator: 'CmdOrCtrl+N',
+          submenu: [{
+            label: '文件夹',
+            click () {
+              createNewFolder(path + '\\\\').then(stat => {
+              })
+            }
+          }, {
+            label: '文件',
+            click () {
+              createNewTxt(path + '\\\\').then(stat => {
+                me.tableData.push(stat)
+              })
+            }
+          }]
+        })
+        menu1.append(newFile)
+        menu1.popup(this.$electron.remote.getCurrentWindow())
+        // let rightClickPosition = null
+        // let FILE = document.getElementById('folder')
+        // FILE.window.addEventListener('contextmenu', e => {
+        //   e.preventDefault()
+        //   menu1.popup(this.$electron.remote.getCurrentWindow())
+        //     // rightClickPosition = {x: e.x, y: e.y}
+        //     // let selectedElement = document.elementFromPoint(rightClickPosition.x, rightClickPosition.y).parentNode
+        //     // let id = selectedElement.attributes.id && +selectedElement.attributes.id.nodeValue
+        // }, false)
       }
     }
   }
