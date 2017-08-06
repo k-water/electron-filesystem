@@ -196,9 +196,9 @@ export function createNewTxt (src) {
 }
 /**
  * @export
- * @param {any} src 路径
- * @param {any} dialog electron
- * @param {any} alert
+ * @param {String} src 路径
+ * @param {Objec} dialog electron
+ * @param {Boolean} alert
  * @returns
  * @feature 删除文件
  */
@@ -240,7 +240,14 @@ export function deleteFile (src, dialog, alert) {
     }
   })
 }
-
+/**
+ * @export
+ * @param {String} src
+ * @param {Object} dialog
+ * @param {Boolean} alert
+ * @returns
+ * @feature 删除文件夹
+ */
 export function deleteFolder (src, dialog, alert) {
   let buttons = ['OK', 'Cancel']
   let title = '删除文件夹'
@@ -280,5 +287,25 @@ export function deleteFolder (src, dialog, alert) {
         }
       })
     }
+  })
+}
+/**
+ * @export
+ * @param {String} src
+ * @param {String} dist
+ * @returns
+ * @feature 重命名
+ */
+export function rename (src, dist) {
+  return new Promise((resolve, reject) => {
+    fs.rename(src, dist, err => {
+      if (err) {
+        reject(err)
+      } else {
+        return getFileInfo(dist).then(stat => {
+          resolve(stat)
+        })
+      }
+    })
   })
 }

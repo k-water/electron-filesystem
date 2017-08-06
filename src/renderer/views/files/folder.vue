@@ -1,6 +1,13 @@
 <template>
   <transition name="slide" mode="out-in">
     <div class="folder" id="folder" @contextmenu="createNewOne($route.params.id)">
+      <Modal
+        title="重命名"
+        v-model="show"
+        @on-ok="changeFileName"
+      >
+        <Input v-model="filename" placeholder="请输入新的文件名"></Input>
+      </Modal>
       <div class="folder-container">
         <div class="back" @click="back">
           <Icon 
@@ -96,7 +103,8 @@
     createNewFolder,
     createNewTxt,
     deleteFile,
-    deleteFolder
+    deleteFolder,
+    rename
   } from '@/common/js/file'
   export default {
     computed: {
@@ -118,13 +126,17 @@
           })
         }
         setTimeout(() => {
-          this.tableData = this.folderInfo.slice()
+          this.tableData = JSON.parse(JSON.stringify(this.folderInfo))
         }, 200)
       }
     },
     data () {
       return {
         tableData: [],
+        show: false,
+        filename: '',
+        fileInfo: {},
+        fileIndex: 0,
         columns: [
           {
             title: '名称',
@@ -235,7 +247,30 @@
         menu1.append(newFile)
         menu1.popup(this.$electron.remote.getCurrentWindow())
       },
-
+      changeFileName () {
+        if (!this.filename) {
+          this.show = false
+          return this.$Notice.error({
+            title: '文件名不能为空',
+            duration: 2
+          })
+        }
+        let dist
+        if (this.fileInfo.type === 'TXT文档') {
+          dist = this.fileInfo.location + this.filename + '.txt'
+        } else {
+          dist = this.fileInfo.location + this.filename
+        }
+        rename(this.fileInfo.path, dist).then(stat => {
+        })
+        if (this.fileInfo.type === 'TXT文档') {
+          this.tableData[this.fileIndex].name = this.filename + '.txt'
+        } else {
+          this.tableData[this.fileIndex].name = this.filename
+        }
+        this.tableData[this.fileIndex].path = dist
+        this.filename = ''
+      },
       handlerFiles (row, index) {
         const MenuItem = this.$electron.remote.MenuItem
         const Menu = this.$electron.remote.Menu
@@ -257,7 +292,18 @@
             }
           }
         })
+
+        let renameMenu = new MenuItem({
+          'label': '重命名',
+          accelerator: 'CmdOrCtrl+R',
+          click () {
+            me.show = true
+            me.fileInfo = Object.assign({}, row)
+            me.fileIndex = index
+          }
+        })
         menu1.append(deleteMenu)
+        menu1.append(renameMenu)
         menu1.popup(this.$electron.remote.getCurrentWindow())
       }
     }
