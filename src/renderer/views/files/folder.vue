@@ -10,31 +10,99 @@
           >
           </Icon>
         </div>
-        <Table
-          highlight-row
-          :columns="columns"
-          :data="tableData"
-          class="t-folder"
-          @on-row-dblclick="forwardFolder"
-        >
-        </Table>
+        <div class="t-folder ivu-table-wrapper">
+          <div class="ivu-table ivu-table-small">
+            <div class="ivu-table-header">
+              <table 
+                cellspacing="0" 
+                cellpadding="0" 
+                border="0" 
+                style="width: 100%;"
+              >
+                <thead>
+                  <tr>
+                    <th class="" style="width: 30%">
+                      <div class="ivu-table-cell" style=""><span>名称</span>
+                      </div>
+                    </th>
+                    <th class="" style="width: 30%">
+                      <div class="ivu-table-cell"><span>修改时间</span>
+                      </div>
+                    </th>
+                    <th class="" style="width: 20%">
+                      <div class="ivu-table-cell"><span>类型</span>
+                      </div>
+                    </th>
+                    <th class="" style="width: 20%">
+                      <div class="ivu-table-cell"><span>大小</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="ivu-table-body">
+              <table 
+                cellspacing="0" 
+                cellpadding="0" 
+                border="0" 
+                style="width: 100%;"
+              >
+                <tbody class="ivu-table-tbody">
+                  <tr class="ivu-table-row" 
+                    v-for="(item, index) in tableData"
+                    :key="item.uid"
+                    @contextmenu.stop="handlerFiles(item, index)"
+                    @dblclick="forwardFolder(item)"
+                  >
+                    <td class="" style="width: 30%">
+                      <div class="ivu-table-cell">
+                        <div>
+                          <img :src="item.src" alt="icon" width="16" height="16">
+                          <strong>{{item.name}}</strong>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="" style="width: 30%">
+                      <div class="ivu-table-cell">
+                        <span> {{new Date(item.atime).toLocaleString()}} </span>
+                      </div>
+                    </td>
+                    <td class="" style="width: 20%">
+                      <div class="ivu-table-cell">
+                        <div>{{item.type}}</div>
+                      </div>
+                    </td>
+                    <td class="" style="width: 20%">
+                      <div class="ivu-table-cell">
+                        <div>{{ item.size === 0 ? '' : formatMem(item.size) }}</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </transition>
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
-  import { openFile, readFolder, createNewFolder, createNewTxt } from '@/common/js/file'
+  import {
+    openFile,
+    readFolder,
+    createNewFolder,
+    createNewTxt,
+    deleteFile,
+    deleteFolder
+  } from '@/common/js/file'
   export default {
     computed: {
       ...mapGetters([
         'folderInfo'
-      ]),
-      disk () {
-        let path = this.$route.fullPath.split('/')
-        let realPath = path[path.length - 1].split('\\')
-        return realPath[0]
-      }
+      ])
     },
     created () {
       this.reload()
@@ -50,7 +118,7 @@
           })
         }
         setTimeout(() => {
-          this.tableData = this.folderInfo
+          this.tableData = this.folderInfo.slice()
         }, 200)
       }
     },
@@ -107,7 +175,7 @@
       ...mapMutations({
         getFolderInfo: 'GET_FOLDER_INFO'
       }),
-      toMem (size) {
+      formatMem (size) {
         let kb = 1024
         let mb = 1024 * 1024
         let gb = mb * 1024
@@ -140,7 +208,6 @@
           openFile(row.path)
         }
       },
-
       createNewOne (path) {
         const MenuItem = this.$electron.remote.MenuItem
         const Menu = this.$electron.remote.Menu
@@ -164,17 +231,34 @@
             }
           }]
         })
+
         menu1.append(newFile)
         menu1.popup(this.$electron.remote.getCurrentWindow())
-        // let rightClickPosition = null
-        // let FILE = document.getElementById('folder')
-        // FILE.window.addEventListener('contextmenu', e => {
-        //   e.preventDefault()
-        //   menu1.popup(this.$electron.remote.getCurrentWindow())
-        //     // rightClickPosition = {x: e.x, y: e.y}
-        //     // let selectedElement = document.elementFromPoint(rightClickPosition.x, rightClickPosition.y).parentNode
-        //     // let id = selectedElement.attributes.id && +selectedElement.attributes.id.nodeValue
-        // }, false)
+      },
+
+      handlerFiles (row, index) {
+        const MenuItem = this.$electron.remote.MenuItem
+        const Menu = this.$electron.remote.Menu
+        const dialog = this.$electron.remote.dialog
+        const menu1 = new Menu()
+        let me = this
+        let deleteMenu = new MenuItem({
+          label: '删除',
+          accelerator: 'CmdOrCtrl+D',
+          click () {
+            if (row.type !== '文件夹') {
+              deleteFile(row.path, dialog, true).then(() => {
+                me.tableData.splice(index, 1)
+              })
+            } else {
+              deleteFolder(row.path, dialog, true).then(() => {
+                me.tableData.splice(index, 1)
+              })
+            }
+          }
+        })
+        menu1.append(deleteMenu)
+        menu1.popup(this.$electron.remote.getCurrentWindow())
       }
     }
   }
@@ -197,11 +281,11 @@
   .back {
     padding: 0 5px 0 5px;
     cursor: pointer;
-    width: 48px;
-    height: 48px;
-    line-height: 32px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
     position: absolute;
-    top: 8px;
+    top: 4px;
     z-index: 100;
   }
   .img-folder {
@@ -213,5 +297,8 @@
   }
   .slide-enter, .slide-leave-to {
     transform: translate3d(0, 100%, 0)
+  }
+  .ivu-table-row:hover td{
+    background-color:#ebf7ff !important;
   }
 </style>

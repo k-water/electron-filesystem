@@ -1,5 +1,6 @@
 import { icon } from '@/common/js/icon'
 import { exec } from 'child_process'
+import iconv from 'iconv-lite'
 import Vue from 'vue'
 const fs = require('fs')
 
@@ -191,5 +192,93 @@ export function createNewTxt (src) {
         resolve(getFileInfo(dist))
       }
     })
+  })
+}
+/**
+ * @export
+ * @param {any} src 路径
+ * @param {any} dialog electron
+ * @param {any} alert
+ * @returns
+ * @feature 删除文件
+ */
+export function deleteFile (src, dialog, alert) {
+  let buttons = ['OK', 'Cancel']
+  let title = '删除文件'
+  let infoSuccess = '删除 ' + src + ' 成功!'
+  let message = '确认要删除吗? 此操作不可逆!'
+  return new Promise((resolve, reject) => {
+    if (alert !== false) {
+      dialog.showMessageBox({
+        type: 'question',
+        title: title,
+        buttons: buttons,
+        message: message
+      }, index => {
+        if (index === 0) {
+          fs.unlink(src, err => {
+            if (err) {
+              reject(err)
+            } else {
+              dialog.showMessageBox({title: infoSuccess, detail: infoSuccess, type: 'info', buttons: ['OK']})
+              resolve()
+            }
+          })
+        } else {
+          const err = 'cancel'
+          reject(err)
+        }
+      })
+    } else {
+      fs.unlink(src, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      })
+    }
+  })
+}
+
+export function deleteFolder (src, dialog, alert) {
+  let buttons = ['OK', 'Cancel']
+  let title = '删除文件夹'
+  let infoSuccess = '删除 ' + src + ' 成功!'
+  let message = '确认要删除吗? 此操作不可逆!'
+  return new Promise((resolve, reject) => {
+    if (alert !== false) {
+      dialog.showMessageBox({
+        type: 'question',
+        title: title,
+        buttons: buttons,
+        message: message
+      }, index => {
+        if (index === 0) {
+          exec(`rmdir "${src}" /S /Q`, {
+            encoding: 'GB2312'
+          }, (err, stdout, stderr) => {
+            if (err || iconv.decode(stderr, 'GB2312')) {
+              dialog.showErrorBox(iconv.decode(stderr, 'GB2312'), iconv.decode(stdout, 'GB2312'))
+              reject(iconv.decode(stderr, 'GB2312'))
+            } else {
+              dialog.showMessageBox({title: infoSuccess, detail: infoSuccess, type: 'info', buttons: ['OK']})
+              resolve()
+            }
+          })
+        }
+      })
+    } else {
+      exec(`rmdir "${src}" /S /Q`, {
+        encoding: 'GB2312'
+      }, (err, stdout, stderr) => {
+        if (err || iconv.decode(stderr, 'GB2312')) {
+          dialog.showErrorBox(iconv.decode(stderr, 'GB2312'), iconv.decode(stdout, 'GB2312'))
+          reject(iconv.decode(stderr, 'GB2312'))
+        } else {
+          resolve()
+        }
+      })
+    }
   })
 }

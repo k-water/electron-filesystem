@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
+    "iconv-lite": "^0.4.18",
     "iview": "^2.0.0",
     "node-wmic": "^1.1.0",
     "reset-css": "^2.2.1",
