@@ -1,22 +1,26 @@
 <template>
-  <div class="folder" id="folder" @contextmenu="createNewOne($route.params.id)">
-    <div class="back" @click="back">
-      <Icon 
-        type="ios-arrow-back" 
-        size="28"
-        color="rgba(51, 174, 252, 0.5)"
-      >
-      </Icon>
+  <transition name="slide" mode="out-in">
+    <div class="folder" id="folder" @contextmenu="createNewOne($route.params.id)">
+      <div class="folder-container">
+        <div class="back" @click="back">
+          <Icon 
+            type="ios-arrow-back" 
+            size="28"
+            color="rgba(51, 174, 252, 0.5)"
+          >
+          </Icon>
+        </div>
+        <Table
+          highlight-row
+          :columns="columns"
+          :data="tableData"
+          class="t-folder"
+          @on-row-dblclick="forwardFolder"
+        >
+        </Table>
+      </div>
     </div>
-    <Table 
-      highlight-row 
-      :columns="columns" 
-      :data="tableData"
-      class="t-folder"
-      @on-row-dblclick="forwardFolder"
-    >
-    </Table>
-  </div>
+  </transition>
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
@@ -45,7 +49,9 @@
             this.getFolderInfo(res)
           })
         }
-        this.tableData = this.folderInfo
+        setTimeout(() => {
+          this.tableData = this.folderInfo
+        }, 200)
       }
     },
     data () {
@@ -176,11 +182,16 @@
 <style lang="less" scoped>
   .folder {
     height: 100%;
+    width: 50%;
     overflow-y: auto;
-    position: relative;
+    position: fixed;
+    z-index: 100;
+    top: 50px;
+    left: 25%;
+    bottom: 0;
+    right: 0;
     .t-folder {
       height: 100%;
-      // margin-top: 4%;
     }
   }
   .back {
@@ -196,5 +207,11 @@
   .img-folder {
     width: 16px !important;
     height: 16px !important;
+  }
+  .slide-enter-active, .slide-leave-active {
+    transition: all .5s cubic-bezier(.55,0,.1,1);
+  }
+  .slide-enter, .slide-leave-to {
+    transform: translate3d(0, 100%, 0)
   }
 </style>

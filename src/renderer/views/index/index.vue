@@ -18,7 +18,7 @@
       >
       </Table>
 
-      <transition>
+      <transition name="slide">
         <keep-alive>
           <router-view></router-view>
         </keep-alive>
@@ -146,8 +146,8 @@
   }
   .container {
     position: relative;
+    height: 100%;
     .t-folder {
-      // padding-top: 4%;
     }
     .footer-bread {
       position: fixed;
