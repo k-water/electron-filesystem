@@ -309,3 +309,141 @@ export function rename (src, dist) {
     })
   })
 }
+
+/**
+ * @param {String} src
+ * @param {String} dist
+ * @param {Object} dialog
+ * @returns
+ * @feature 拷贝文件
+ */
+function copy (src, dist, dialog) {
+  return new Promise((resolve, reject) => {
+    exec(`copy "${src}" "${dist}" /Y`, {
+      encoding: 'GB2312'
+    }, (err, stdout, stderr) => {
+      if (err || iconv.decode(stderr, 'GB2312')) {
+        dialog.showErrorBox(iconv.decode(stderr, 'GB2312'), iconv.decode(stdout, 'GB2312'))
+        reject(iconv.decode(stderr, 'GB2312'))
+      } else {
+        dialog.showMessageBox({
+          type: 'info',
+          title: 'Success',
+          message: iconv.decode(stdout, 'GB2312'),
+          buttons: ['OK']
+        })
+        getFileInfo(dist).then(stat => {
+          resolve(stat)
+        })
+      }
+    })
+  })
+}
+/**
+ * @export
+ * @param {String} src
+ * @param {String} dist
+ * @param {Object} dialog
+ * @returns
+ * @feature 粘贴文件
+ */
+export function copyFile (src, dist, dialog) {
+  return new Promise((resolve, reject) => {
+    if (src === dist) {
+      copy(src, duplicate(dist), dialog).then(result => {
+        resolve(result)
+      }, err => {
+        reject(err)
+      })
+    } else {
+      if (fs.existsSync(dist)) {
+        let title = '重名文件存在'
+        let message = '重名文件存在，继续粘贴将覆盖，是否继续?'
+        const buttons = ['OK', 'Cancel']
+        dialog.showMessageBox({
+          type: 'question',
+          title: title,
+          buttons: buttons,
+          message: message
+        }, index => {
+          if (index === 0) {
+            copy(src, dist, dialog).then(result => {
+              resolve(result)
+            }, err => {
+              reject(err)
+            })
+          }
+        })
+      } else {
+        copy(src, dist, dialog).then(result => {
+          resolve(result)
+        }, err => {
+          reject(err)
+        })
+      }
+    }
+  })
+}
+
+function xcopy (src, dist, dialog) {
+  return new Promise((resolve, reject) => {
+    exec(`xcopy "${src}" "${dist}" /E /C /Y /H /I`, {
+      encoding: 'GB2312'
+    }, (err, stdout, stderr) => {
+      if (err || iconv.decode(stderr, 'GB2312')) {
+        dialog.showErrorBox(iconv.decode(stderr, 'GB2312'), iconv.decode(stdout, 'GB2312'))
+        reject(iconv.decode(stderr, 'GB2312'))
+      } else {
+        dialog.showMessageBox({
+          type: 'info',
+          title: 'Success',
+          message: iconv.decode(stdout, 'GB2312'),
+          buttons: ['OK']
+        })
+        getFileInfo(dist).then(stat => {
+          resolve(stat)
+        })
+      }
+    })
+  })
+}
+
+export function copyFolder (src, dist, dialog) {
+  return new Promise((resolve, reject) => {
+    if (src === dist) {
+      xcopy(src, duplicateFolder(dist), dialog).then(result => {
+        resolve(result)
+      }, err => {
+        reject(err)
+      })
+    } else {
+      if (fs.existsSync(dist)) {
+        let title = '重名文件夹存在'
+        let message = '重名文件夹存在，继续粘贴将覆盖，是否继续?'
+        const buttons = ['OK', 'Cancel']
+        dialog.showMessageBox({
+          type: 'question',
+          title: title,
+          buttons: buttons,
+          message: message
+        }, index => {
+          if (index === 0) {
+            xcopy(src, dist, dialog).then(result => {
+              resolve(result)
+            }, err => {
+              reject(err)
+            })
+          } else {
+            resolve()
+          }
+        })
+      } else {
+        xcopy(src, dist, dialog).then(result => {
+          resolve(result)
+        }, err => {
+          reject(err)
+        })
+      }
+    }
+  })
+}

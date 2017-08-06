@@ -104,7 +104,9 @@
     createNewTxt,
     deleteFile,
     deleteFolder,
-    rename
+    rename,
+    copyFile,
+    copyFolder
   } from '@/common/js/file'
   export default {
     computed: {
@@ -125,6 +127,12 @@
             this.getFolderInfo(res)
           })
         }
+        // 复制到下一层的文件夹
+        this.copyParams.dist = this.$route.params.id + '\\\\' + this.copyParams.name
+        // 从下一层文件夹复制到上一层
+        if (this.copyParams.dist.length > this.copyParams.src.length) {
+          this.copyParams.src = this.copyParams.dist
+        }
         setTimeout(() => {
           this.tableData = JSON.parse(JSON.stringify(this.folderInfo))
         }, 200)
@@ -137,50 +145,12 @@
         filename: '',
         fileInfo: {},
         fileIndex: 0,
-        columns: [
-          {
-            title: '名称',
-            align: 'left',
-            key: 'name',
-            render: (h, params) => {
-              return h('div', [
-                h('img', {
-                  attrs: {
-                    src: params.row.src,
-                    width: '16px',
-                    height: '16px'
-                  }
-                }),
-                h('strong', params.row.name)
-              ])
-            }
-          },
-          {
-            title: '修改时间',
-            key: 'atime',
-            align: 'center',
-            render: (h, params) => {
-              return h('div', [
-                new Date(params.row.atime).toLocaleString()
-              ])
-            }
-          },
-          {
-            title: '类型',
-            key: 'type',
-            align: 'center'
-          },
-          {
-            title: '大小',
-            key: 'size',
-            align: 'center',
-            render: (h, params) => {
-              return h('div', [
-                params.row.size === 0 ? '' : this.toMem(params.row.size)
-              ])
-            }
-          }
-        ]
+        copyParams: {
+          src: '',
+          dist: '',
+          name: '',
+          type: '文件夹'
+        }
       }
     },
     methods: {
@@ -223,9 +193,10 @@
       createNewOne (path) {
         const MenuItem = this.$electron.remote.MenuItem
         const Menu = this.$electron.remote.Menu
+        const dialog = this.$electron.remote.dialog
         const menu1 = new Menu()
         let me = this
-        let newFile = new MenuItem({
+        let newMenu = new MenuItem({
           label: '新建',
           accelerator: 'CmdOrCtrl+N',
           submenu: [{
@@ -244,7 +215,30 @@
           }]
         })
 
-        menu1.append(newFile)
+        let pasteMenu = new MenuItem({
+          label: '粘贴',
+          accelerator: 'CmdOrCtrl+V',
+          click () {
+            if (me.copyParams.type === '文件夹') {
+              copyFolder(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
+                if (me.copyParams.dist.length < me.copyParams.src.length) {
+                  return
+                }
+                me.tableData.push(result)
+              })
+            } else {
+              copyFile(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
+                if (me.copyParams.dist.length < me.copyParams.src.length) {
+                  return
+                }
+                me.tableData.push(result)
+              })
+            }
+          }
+        })
+
+        menu1.append(pasteMenu)
+        menu1.append(newMenu)
         menu1.popup(this.$electron.remote.getCurrentWindow())
       },
       changeFileName () {
@@ -302,6 +296,19 @@
             me.fileIndex = index
           }
         })
+
+        let copyMenu = new MenuItem({
+          label: '复制',
+          accelerator: 'CmdOrCtrl+C',
+          click () {
+            console.log(row)
+            me.copyParams.src = row.path
+            me.copyParams.dist = row.path
+            me.copyParams.name = row.name
+            me.copyParams.type = row.type
+          }
+        })
+        menu1.append(copyMenu)
         menu1.append(deleteMenu)
         menu1.append(renameMenu)
         menu1.popup(this.$electron.remote.getCurrentWindow())
