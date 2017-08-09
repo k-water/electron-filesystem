@@ -1,0 +1,20 @@
+{
+  "name": "electron-filesystem",
+  "version": "1.0.0",
+  "description": "Simple fileSystem created with electron-vue",
+  "main": "./dist/main.js",
+  "dependencies": {
+    "babel-runtime": "^6.25.0",
+    "dotenv": "^4.0.0",
+    "vue": "^2.1.10",
+    "vue-electron": "^1.0.6",
+    "vue-router": "^2.1.2",
+    "vuex": "^2.1.1",
+    "iconv-lite": "^0.4.18",
+    "iview": "^2.0.0",
+    "node-wmic": "^1.1.0",
+    "reset-css": "^2.2.1"
+  },
+  "devDependencies": {},
+  "author": "k-water <625592890@qq.com>"
+}
