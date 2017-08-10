@@ -9,9 +9,8 @@ export default class Application {
 
   createWindow () {
     this.mainWindow = new BrowserWindow({
-      minWidth: 1920,
-      minHeight: 1080,
-      useContentSize: true
+      width: 1920,
+      height: 1080
     })
 
     this.mainWindow.loadURL(this.winURL)
