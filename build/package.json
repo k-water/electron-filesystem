@@ -1,0 +1,9 @@
+{
+  "name": "electron-filesystem",
+  "version": "1.0.0",
+  "description": "Simple fileSystem created with electron-vue",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-electron-installer": "^2.1.0"
+  }
+}

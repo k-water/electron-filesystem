@@ -1,9 +1,8 @@
 .DS_Store
-app/dist/index.html
-app/dist/main.js
-app/dist/renderer.js
-app/dist/styles.css
-builds/*
+app/dist/*
+build/node_modules/
+build/installer/
+build/fileSystem-*
 coverage
 node_modules/
 npm-debug.log

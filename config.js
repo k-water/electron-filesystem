@@ -22,8 +22,10 @@ let config = {
     dir: path.join(__dirname, 'app'),
     icon: path.join(__dirname, 'app/icons/icon'),
     ignore: /\b(src|index\.ejs|icons)\b/,
-    out: path.join(__dirname, 'builds'),
+    out: path.join(__dirname, 'build'),
     overwrite: true,
+    // versionStringCompanyName: 'fileSystem',
+    // versionStringProductName: 'fileSystem',
     platform: process.env.PLATFORM_TARGET || 'all'
   }
 }
