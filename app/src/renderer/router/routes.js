@@ -20,16 +20,10 @@ const routes = [
     path: '/computer',
     name: 'index',
     component: Index,
-    meta: {
-      auth: true
-    },
     children: [{
       path: '/computer/:id',
       name: 'folder',
-      component: Folder,
-      meta: {
-        auth: true
-      }
+      component: Folder
     }]
   }, {
     path: '/',

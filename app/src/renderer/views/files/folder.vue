@@ -72,7 +72,7 @@
                     </td>
                     <td class="" style="width: 30%">
                       <div class="ivu-table-cell">
-                        <span> {{new Date(item.atime).toLocaleString()}} </span>
+                        <span> {{new Date(item.ctime).toLocaleString()}} </span>
                       </div>
                     </td>
                     <td class="" style="width: 20%">
@@ -92,11 +92,66 @@
           </div>
         </div>
       </div>
+
+      <Modal
+        title="文件详情"
+        v-model="showFileDetail"
+        class-name="vertical-center-modal"
+        width="420px"
+      >
+        <Card class="file-card">
+          <p>
+            <span class="file-title">文件名：</span>
+            <span> {{fileDetail.name}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件块数：</span>
+            <span> {{Block}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件I/O块：</span>
+            <span> {{IOBlock}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件的权限：</span>
+            <span> {{Access}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件所在目录：</span>
+            <span> {{fileDetail.path}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件设备ID号：</span>
+            <span> {{Device}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件硬连接数量：</span>
+            <span> {{fileDetail.nlink}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件Indoe节点号：</span>
+            <span> {{fileDetail.ino}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件所有者用户ID：</span>
+            <span> {{Uid}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件所有者用户组ID：</span>
+            <span> {{Gid}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件最后改动时间：</span>
+            <span> {{new Date(fileDetail.ctime).toLocaleString()}} </span>
+          </p>
+        </Card>
+      </Modal>
     </div>
   </transition>
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
+  import { exec } from 'child_process'
   import {
     openFile,
     readFolder,
@@ -145,6 +200,14 @@
         filename: '',
         fileInfo: {},
         fileIndex: 0,
+        showFileDetail: false,
+        fileDetail: {},
+        Uid: '',
+        Gid: '',
+        Access: '',
+        Block: '',
+        IOBlock: '',
+        Device: '',
         copyParams: {
           src: '',
           dist: '',
@@ -301,16 +364,39 @@
           label: '复制',
           accelerator: 'CmdOrCtrl+C',
           click () {
-            console.log(row)
             me.copyParams.src = row.path
             me.copyParams.dist = row.path
             me.copyParams.name = row.name
             me.copyParams.type = row.type
           }
         })
+
+        let fileInfoMenu = new MenuItem({
+          label: '查看文件信息',
+          accelerator: 'CmdOrCtrl+J',
+          click () {
+            me.fileDetail = Object.assign({}, row)
+            console.log(me.fileDetail)
+            me.showFileDetail = true
+            exec(`stat -L ${row.path}`, function (error, stdout, stderr) {
+              if (error) {
+                console.log(error.stack)
+                console.log('Error code: ' + error.code)
+              }
+              let temp = stdout.split(': ')
+              me.Uid = temp[9].split('Gid')[0]
+              me.Gid = temp[10].split('Access')[0]
+              me.Access = temp[8].split('Uid')[0]
+              me.Block = temp[3].split('IO Block')[0]
+              me.IOBlock = temp[4].split('Device')[0]
+              me.Device = temp[5].split('Inode')[0]
+            })
+          }
+        })
         menu1.append(copyMenu)
         menu1.append(deleteMenu)
         menu1.append(renameMenu)
+        menu1.append(fileInfoMenu)
         menu1.popup(this.$electron.remote.getCurrentWindow())
       }
     }
@@ -344,6 +430,27 @@
   .img-folder {
     width: 16px !important;
     height: 16px !important;
+  }
+  .vertical-center-modal{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ivu-modal{
+      top: 0;
+    }
+  }
+  .file-card {
+    box-shadow: 0 1px 6px rgba(0,0,0,.2);
+    border-color: #eee;
+    p {
+      padding-bottom: 5px;
+    }
+    .file-title {
+      display: inline-block;
+      width: 150px;
+      text-align: right;
+    }
   }
   .slide-enter-active, .slide-leave-active {
     transition: all .3s;

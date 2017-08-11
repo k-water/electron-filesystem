@@ -96,7 +96,6 @@ export function getFileInfo (src) {
         stats.path = src
         stats.rename = false
         stats.location = stats.path.slice(0, stats.path.indexOf(stats.name))
-
         resolve(stats)
       }
     })
