@@ -18,9 +18,11 @@
       >
       </Table>
 
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+      <transition name="fade">
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
+      </transition>
 
     </Col>
     <Col span="6">
@@ -138,6 +140,14 @@
   }
 </script>
 <style lang="less" scoped>
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity .4s
+  }
+  .fade-enter,
+  .fade-leave {
+    opacity: 0
+  }
   .wrapper {
     height: 100%;
     overflow-y: auto;
@@ -154,8 +164,6 @@
   .container {
     position: relative;
     height: 100%;
-    .t-folder {
-    }
     .footer-bread {
       position: fixed;
       left: 26%;

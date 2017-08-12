@@ -5,8 +5,6 @@ import routes from './routes'
 // import history from './history'
 
 const router = new Router({
-  mode: 'hash',
-  base: process.env.NODE_ENV === 'development' ? '/' : '/app/',
   routes
 })
 

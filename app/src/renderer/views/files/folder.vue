@@ -197,12 +197,6 @@
         fileIndex: 0,
         showFileDetail: false,
         fileDetail: {},
-        Uid: '',
-        Gid: '',
-        Access: '',
-        Block: '',
-        IOBlock: '',
-        Device: '',
         copyParams: {
           src: '',
           dist: '',
@@ -434,10 +428,10 @@
     }
   }
   .slide-enter-active, .slide-leave-active {
-    transition: all .3s;
+    transition: opacity .4s;
   }
-  .slide-enter, .slide-leave-to {
-    transform: translate3d(0, 100%, 0)
+  .slide-enter, .slide-leave {
+    opacity: 0;
   }
   .ivu-table-row:hover td{
     background-color:#ebf7ff !important;
