@@ -105,16 +105,12 @@
             <span> {{fileDetail.name}} </span>
           </p>
           <p>
-            <span class="file-title">文件块数：</span>
-            <span> {{Block}} </span>
+            <span class="file-title">文件类型：</span>
+            <span> {{fileDetail.type}} </span>
           </p>
           <p>
-            <span class="file-title">文件I/O块：</span>
-            <span> {{IOBlock}} </span>
-          </p>
-          <p>
-            <span class="file-title">文件的权限：</span>
-            <span> {{Access}} </span>
+            <span class="file-title">文件创建时间：</span>
+            <span> {{new Date(fileDetail.birthtime).toLocaleString()}} </span>
           </p>
           <p>
             <span class="file-title">文件所在目录：</span>
@@ -122,7 +118,11 @@
           </p>
           <p>
             <span class="file-title">文件设备ID号：</span>
-            <span> {{Device}} </span>
+            <span> {{fileDetail.dev}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件的权限标志：</span>
+            <span> {{fileDetail.mode}} </span>
           </p>
           <p>
             <span class="file-title">文件硬连接数量：</span>
@@ -134,15 +134,11 @@
           </p>
           <p>
             <span class="file-title">文件所有者用户ID：</span>
-            <span> {{Uid}} </span>
+            <span> {{fileDetail.uid}} </span>
           </p>
           <p>
             <span class="file-title">文件所有者用户组ID：</span>
-            <span> {{Gid}} </span>
-          </p>
-          <p>
-            <span class="file-title">文件最后改动时间：</span>
-            <span> {{new Date(fileDetail.ctime).toLocaleString()}} </span>
+            <span> {{fileDetail.gid}} </span>
           </p>
         </Card>
       </Modal>
@@ -151,7 +147,6 @@
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
-  import { exec } from 'child_process'
   import {
     openFile,
     readFolder,
@@ -376,21 +371,7 @@
           accelerator: 'CmdOrCtrl+J',
           click () {
             me.fileDetail = Object.assign({}, row)
-            console.log(me.fileDetail)
             me.showFileDetail = true
-            exec(`stat -L ${row.path}`, function (error, stdout, stderr) {
-              if (error) {
-                console.log(error.stack)
-                console.log('Error code: ' + error.code)
-              }
-              let temp = stdout.split(': ')
-              me.Uid = temp[9].split('Gid')[0]
-              me.Gid = temp[10].split('Access')[0]
-              me.Access = temp[8].split('Uid')[0]
-              me.Block = temp[3].split('IO Block')[0]
-              me.IOBlock = temp[4].split('Device')[0]
-              me.Device = temp[5].split('Inode')[0]
-            })
           }
         })
         menu1.append(copyMenu)

@@ -142,7 +142,6 @@ export function duplicateFolder (to) {
 export function createNewFolder (src) {
   return new Promise((resolve, reject) => {
     let dist = duplicateFolder(src + '新建文件夹')
-    console.log(`dist is: ${dist}`)
     fs.mkdir(dist, 777, err => {
       if (err) {
         console.log(err)
