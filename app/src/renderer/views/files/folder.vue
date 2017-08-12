@@ -177,12 +177,13 @@
             this.getFolderInfo(res)
           })
         }
-        // 复制到下一层的文件夹
-        this.copyParams.dist = this.$route.params.id + '\\\\' + this.copyParams.name
+
         // 从下一层文件夹复制到上一层
         if (this.copyParams.dist.length > this.copyParams.src.length) {
           this.copyParams.src = this.copyParams.dist
         }
+         // 复制到下一层的文件夹
+        this.copyParams.dist = this.$route.params.id + '\\\\' + this.copyParams.name
         setTimeout(() => {
           this.tableData = JSON.parse(JSON.stringify(this.folderInfo))
         }, 200)
@@ -197,6 +198,11 @@
         fileIndex: 0,
         showFileDetail: false,
         fileDetail: {},
+        cut: {
+          path: '',
+          index: '',
+          type: ''
+        },
         copyParams: {
           src: '',
           dist: '',
@@ -272,19 +278,39 @@
           accelerator: 'CmdOrCtrl+V',
           click () {
             if (me.copyParams.type === '文件夹') {
-              copyFolder(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
-                if (me.copyParams.dist.length < me.copyParams.src.length) {
-                  return
-                }
-                me.tableData.push(result)
-              })
+              if (me.cut.path) {
+                copyFolder(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
+                  if (me.copyParams.dist.length < me.copyParams.src.length) {
+                    return
+                  }
+                  me.tableData.push(result)
+                })
+                setTimeout(() => {
+                  me.cutFile()
+                }, 1000)
+              } else {
+                copyFolder(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
+                  me.tableData.push(result)
+                })
+              }
             } else {
-              copyFile(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
-                if (me.copyParams.dist.length < me.copyParams.src.length) {
-                  return
-                }
-                me.tableData.push(result)
-              })
+              if (me.cut.path) {
+                console.log('src：' + me.copyParams.src)
+                console.log('dist：' + me.copyParams.dist)
+                copyFile(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
+                  me.tableData.push(result)
+                })
+                setTimeout(() => {
+                  me.cutFile()
+                }, 1000)
+              } else {
+                copyFile(me.copyParams.src, me.copyParams.dist, dialog).then(result => {
+                  if (me.copyParams.dist.length < me.copyParams.src.length) {
+                    return
+                  }
+                  me.tableData.push(result)
+                })
+              }
             }
           }
         })
@@ -357,6 +383,7 @@
             me.copyParams.dist = row.path
             me.copyParams.name = row.name
             me.copyParams.type = row.type
+            console.log(`fuzhi: ${me.copyParams.src}`)
           }
         })
 
@@ -368,11 +395,36 @@
             me.showFileDetail = true
           }
         })
+
+        let cutMenu = new MenuItem({
+          label: '剪切',
+          accelerator: 'CmdOrCtrl+X',
+          click () {
+            me.cut.path = row.path
+            me.cut.index = index
+            me.cut.type = row.type
+            me.copyParams.src = row.path
+            me.copyParams.dist = row.path
+            me.copyParams.name = row.name
+            me.copyParams.type = row.type
+          }
+        })
         menu1.append(copyMenu)
         menu1.append(deleteMenu)
         menu1.append(renameMenu)
+        menu1.append(cutMenu)
         menu1.append(fileInfoMenu)
         menu1.popup(this.$electron.remote.getCurrentWindow())
+      },
+      cutFile () {
+        const dialog = this.$electron.remote.dialog
+        if (this.cut.type === '文件夹') {
+          deleteFolder(this.cut.path, dialog, false).then(() => {
+          })
+        } else {
+          deleteFile(this.cut.path, dialog, false).then(() => {
+          })
+        }
       }
     }
   }
