@@ -33,6 +33,7 @@ Electron 可以让你使用纯 JavaScript 调用丰富的原生 APIs 来创造�
 * [x] Babel
 * [x] Webpack
 * [x] Less
+
 项目采用了vue-cli脚手架搭建开发环境，在开始编码之前，在gayhub上搜了一下，发现有大神写了一个基于vue和electron的脚手架，看了文档后，发现正好适合我的需要，瞬间发现了新大陆。
 
 项目名称：`electron-vue`
