@@ -11,10 +11,16 @@ Electron 可以让你使用纯 JavaScript 调用丰富的原生 APIs 来创造�
 
 这不意味着 Electron 是绑定了 GUI 库的 JavaScript。相反，Electron 使用 web 页面作为它的 GUI，所以你能把它看作成一个被 JavaScript 控制的，精简版的 Chromium 浏览器。
 
+
 以下资料供参考学习：
+
 [Electron(维基百科)](https://zh.wikipedia.org/wiki/Electron_(%E8%BD%AF%E4%BB%B6%E6%A1%86%E6%9E%B6))
+
 [中文文档](https://www.w3cschool.cn/electronmanual/)
+
 [(译)Electron的本质](https://segmentfault.com/a/1190000007503495)
+
+
 [入门视频教程](http://ourcodeworld.com/articles/read/106/how-to-choose-read-save-delete-or-create-a-file-with-electron-framework)
 
 ### 技术栈
@@ -30,7 +36,9 @@ Electron 可以让你使用纯 JavaScript 调用丰富的原生 APIs 来创造�
 项目采用了vue-cli脚手架搭建开发环境，在开始编码之前，在gayhub上搜了一下，发现有大神写了一个基于vue和electron的脚手架，看了文档后，发现正好适合我的需要，瞬间发现了新大陆。
 
 项目名称：`electron-vue`
+
 项目地址：[https://github.com/SimulatedGREG/electron-vue](https://github.com/SimulatedGREG/electron-vue)
+
 项目文档(英文的)：[https://simulatedgreg.gitbooks.io/electron-vue/content/en/](https://simulatedgreg.gitbooks.io/electron-vue/content/en/)
 
 > PS：在开始编码之前要仔细阅读文档。
