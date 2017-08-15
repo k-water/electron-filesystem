@@ -103,6 +103,10 @@ npm run lint
 
 # run webpack in production
 npm run pack
+
+### login
+username：water
+password：123
 ```
 ---
 
