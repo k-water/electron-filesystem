@@ -22,7 +22,7 @@ router.afterEach((to, from, next) => {
 })
 
 localStorage.setItem('username', 'water')
-localStorage.setItem('password', 'linzibiao')
+localStorage.setItem('password', '123')
 
 /* eslint-disable no-new */
 new Vue({
