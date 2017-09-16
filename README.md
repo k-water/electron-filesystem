@@ -106,7 +106,7 @@ npm run pack
 
 ### login
 username：water
-password：123
+password：123456
 ```
 ---
 
