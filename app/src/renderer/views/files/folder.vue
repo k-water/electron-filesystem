@@ -1,6 +1,7 @@
 <template>
   <transition name="slide" mode="out-in">
     <div class="folder" id="folder" @contextmenu="createNewOne($route.params.id)">
+     <!--文件重命名dialog-->
       <Modal
         title="重命名"
         v-model="show"
@@ -8,6 +9,7 @@
       >
         <Input v-model="filename" placeholder="请输入新的文件名"></Input>
       </Modal>
+      <!--文件目录-->
       <div class="folder-container" style="margin-bottom: 50px;">
         <div class="back" @click="back">
           <Icon 
@@ -92,7 +94,7 @@
           </div>
         </div>
       </div>
-
+      <!--右键文件属性modal-->
       <Modal
         title="文件详情"
         v-model="showFileDetail"
@@ -107,6 +109,10 @@
           <p>
             <span class="file-title">文件类型：</span>
             <span> {{fileDetail.type}} </span>
+          </p>
+          <p>
+            <span class="file-title">文件大小：</span>
+            <span> {{this.toMem(fileDetail.size) || '0Kb'}} </span>
           </p>
           <p>
             <span class="file-title">文件创建时间：</span>
@@ -142,11 +148,21 @@
           </p>
         </Card>
       </Modal>
+      <!--饼状图-->
+      <Modal
+        title="文件磁盘分布"
+        v-model="showFilePie"
+        class-name="vertical-center-modal"
+      >
+        <ve-pie :data="chartData" :settings="chartSettings" :events="chartEvents">
+        </ve-pie>
+      </Modal>
     </div>
   </transition>
 </template>
 <script>
   import { mapGetters, mapMutations } from 'vuex'
+  import { toMem } from '@/extend/filters'
   import {
     openFile,
     readFolder,
@@ -158,6 +174,7 @@
     copyFile,
     copyFolder
   } from '@/common/js/file'
+  import wmic from 'node-wmic'
   export default {
     computed: {
       ...mapGetters([
@@ -166,12 +183,22 @@
     },
     created () {
       this.reload()
+      let self = this
+      this.chartEvents = {
+        click: function (e) {
+          if (e.name === self.fileDetail.path.substr(6)) {
+            self.showFilePie = false
+            self.showFileDetail = true
+          }
+        }
+      }
     },
     mounted () {
       this.tableData = this.folderInfo
     },
     watch: {
       '$route' () {
+        this.getDisk()
         if (this.$route.name === 'folder') {
           readFolder(this.$route.params.id + '\\\\').then(res => {
             this.getFolderInfo(res)
@@ -197,6 +224,7 @@
         fileInfo: {},
         fileIndex: 0,
         showFileDetail: false,
+        showFilePie: false,
         fileDetail: {},
         cut: {
           path: '',
@@ -208,10 +236,15 @@
           dist: '',
           name: '',
           type: '文件夹'
-        }
+        },
+        chartData: {},
+        chartSettings: {},
+        currentDisk: {},
+        chartEvents: {}
       }
     },
     methods: {
+      toMem: toMem,
       ...mapMutations({
         getFolderInfo: 'GET_FOLDER_INFO'
       }),
@@ -247,6 +280,44 @@
         } else {
           openFile(row.path)
         }
+      },
+      initFilePie (row) {
+        this.fileDetail = row
+        this.chartData = {
+          columns: ['使用量', '字节'],
+          rows: [
+            {
+              '使用量': this.toMem(this.currentDisk.Size - this.currentDisk.FreeSpace) + ' 已使用',
+              '字节': this.currentDisk.Size - this.currentDisk.FreeSpace - this.currentDisk.FreeSpace / 50
+            },
+            {
+              '使用量': this.toMem(this.currentDisk.FreeSpace) + ' 未使用',
+              '字节': this.currentDisk.FreeSpace
+            },
+            {
+              '使用量': row.path.substr(6),
+              '字节': row.type === '文件夹' ? 0 : this.currentDisk.FreeSpace / 50
+            }
+          ]
+        }
+        this.chartSettings = {
+          dimension: '使用量',
+          metrics: '字节',
+          dataType: 'KMB',
+          selectedMode: 'single',
+          hoverAnimation: false,
+          radius: 100,
+          offsetY: 200
+        }
+      },
+      getDisk () {
+        wmic.disk().then(disk => {
+          disk.map((item, index) => {
+            if (item.Caption[0] === this.tableData[0].path[0]) {
+              this.currentDisk = Object.assign({}, item)
+            }
+          })
+        })
       },
       createNewOne (path) {
         const MenuItem = this.$electron.remote.MenuItem
@@ -396,6 +467,15 @@
           }
         })
 
+        let filePieMenu = new MenuItem({
+          label: '文件磁盘分布',
+          accelerator: 'CmdOrCtrl+T',
+          click () {
+            me.initFilePie(row)
+            me.showFilePie = true
+          }
+        })
+
         let cutMenu = new MenuItem({
           label: '剪切',
           accelerator: 'CmdOrCtrl+X',
@@ -414,6 +494,7 @@
         menu1.append(renameMenu)
         menu1.append(cutMenu)
         menu1.append(fileInfoMenu)
+        menu1.append(filePieMenu)
         menu1.popup(this.$electron.remote.getCurrentWindow())
       },
       cutFile () {

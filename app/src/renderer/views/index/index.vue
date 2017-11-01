@@ -128,8 +128,6 @@
     },
     watch: {
       '$route' () {
-        // if (this.$route.name === 'index') {
-        // }
       }
     },
     created () {

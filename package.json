@@ -79,5 +79,7 @@
     "webpack-dev-server": "^2.3.0",
     "webpack-merge": "^2.4.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "v-charts": "^1.11.6"
+  }
 }
