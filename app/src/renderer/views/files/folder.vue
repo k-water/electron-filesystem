@@ -8,7 +8,7 @@
       >
         <Input v-model="filename" placeholder="请输入新的文件名"></Input>
       </Modal>
-      <div class="folder-container">
+      <div class="folder-container" style="margin-bottom: 50px;">
         <div class="back" @click="back">
           <Icon 
             type="ios-arrow-back" 
@@ -18,7 +18,7 @@
           </Icon>
         </div>
         <div class="t-folder ivu-table-wrapper">
-          <div class="ivu-table ivu-table-small">
+          <div class="ivu-table ivu-table-small" style="margin-bottom: 50px;">
             <div class="ivu-table-header">
               <table 
                 cellspacing="0" 
@@ -28,7 +28,7 @@
               >
                 <thead>
                   <tr>
-                    <th class="" style="width: 30%">
+                    <th class="" style="width: 35%">
                       <div class="ivu-table-cell" style=""><span>名称</span>
                       </div>
                     </th>
@@ -40,7 +40,7 @@
                       <div class="ivu-table-cell"><span>类型</span>
                       </div>
                     </th>
-                    <th class="" style="width: 20%">
+                    <th class="" style="width: 15%">
                       <div class="ivu-table-cell"><span>大小</span>
                       </div>
                     </th>
@@ -62,7 +62,7 @@
                     @contextmenu.stop="handlerFiles(item, index)"
                     @dblclick="forwardFolder(item)"
                   >
-                    <td class="" style="width: 30%">
+                    <td class="" style="width: 35%">
                       <div class="ivu-table-cell">
                         <div>
                           <img :src="item.src" alt="icon" width="16" height="16">
@@ -80,7 +80,7 @@
                         <div>{{item.type}}</div>
                       </div>
                     </td>
-                    <td class="" style="width: 20%">
+                    <td class="" style="width: 15%">
                       <div class="ivu-table-cell">
                         <div>{{ item.size === 0 ? '' : formatMem(item.size) }}</div>
                       </div>
@@ -438,10 +438,10 @@
     z-index: 100;
     top: 50px;
     left: 25%;
-    bottom: 0;
+    bottom: 0px;
     right: 0;
     .t-folder {
-      height: 100%;
+      height: 100%; 
     }
   }
   .back {
@@ -487,5 +487,9 @@
   }
   .ivu-table-row:hover td{
     background-color:#ebf7ff !important;
+  }
+  .ivu-table-row td {
+    height: 30px !important;
+    line-height: 150%;
   }
 </style>

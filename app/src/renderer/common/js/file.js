@@ -21,13 +21,10 @@ export function readFolder (path) {
       })
     })
     return Promise.all(promise).then(() => {
-      if (result.length > 30) {
-        return result.slice(0, 30)
-      } else {
-        return result
-      }
+      console.log(result)
+      return result
     }).catch(err => {
-      console.log(err)
+      return console.log(err)
     })
   })
 }
