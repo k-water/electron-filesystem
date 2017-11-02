@@ -109,6 +109,14 @@ username：water
 password：123456
 ```
 ---
+### 制作安装程序
+打包完成后进入`build`目录，执行`grunt`命令
+
+![](https://oc1gyfe6q.qnssl.com/17-11-2/91160373.jpg)
+
+执行完成后会有`installer`目录，双击Setup.exe安装即可
+
+![](https://oc1gyfe6q.qnssl.com/17-11-2/61565525.jpg)
 
 ### 效果预览
 

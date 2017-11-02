@@ -24,8 +24,8 @@ let config = {
     ignore: /\b(src|index\.ejs|icons)\b/,
     out: path.join(__dirname, 'build'),
     overwrite: true,
-    // versionStringCompanyName: 'fileSystem',
-    // versionStringProductName: 'fileSystem',
+    versionStringCompanyName: 'fileSystem',
+    versionStringProductName: 'fileSystem',
     platform: process.env.PLATFORM_TARGET || 'all'
   }
 }
