@@ -332,6 +332,7 @@
             label: '文件夹',
             click () {
               createNewFolder(path + '\\\\').then(stat => {
+                me.tableData.push(stat)
               })
             }
           }, {
@@ -572,5 +573,10 @@
   .ivu-table-row td {
     height: 30px !important;
     line-height: 150%;
+  }
+  .ivu-table-cell {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 </style>

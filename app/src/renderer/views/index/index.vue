@@ -106,15 +106,21 @@
       info (row) {
         this.diskDetail = row
       },
-      async forward (row) {
+      forward (row) {
+        console.log('enter')
         if (row.Description === '光盘') return
         let path = row.Name + '\\\\'
-        await readFolder(path).then(res => {
+        readFolder(path).then(res => {
           this.getFolderInfo(res)
         })
-        this.$router.push({
-          path: `/computer/${path}`
-        })
+        /** 未知bug 中转方法 **/
+        for (var i = 0; i < 2; i++) {
+          setTimeout(() => {
+            this.$router.push({
+              path: `/computer/${path}`
+            })
+          }, 1000)
+        }
       },
       normalize (arr) {
         let ret = []
