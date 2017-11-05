@@ -106,14 +106,14 @@
       info (row) {
         this.diskDetail = row
       },
-      forward (row) {
+      async forward (row) {
+        if (row.Description === '光盘') return
         let path = row.Name + '\\\\'
+        await readFolder(path).then(res => {
+          this.getFolderInfo(res)
+        })
         this.$router.replace({
           path: `/computer/${path}`
-        })
-        if (row.Description === '光盘') return
-        readFolder(path).then(res => {
-          this.getFolderInfo(res)
         })
       },
       normalize (arr) {
