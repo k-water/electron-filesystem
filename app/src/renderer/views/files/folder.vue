@@ -260,14 +260,20 @@
         else return size.toFixed(2) + 'B'
       },
       reload () {
-        if (this.$route.params.id) {
+        if (this.$route.params.id.length > 4) {
           this.$router.replace({
             name: 'index'
           })
         }
       },
       back () {
-        this.$router.go(-1)
+        if (this.$route.params.id.length <= 4) {
+          this.$router.replace({
+            path: '/computer'
+          })
+        } else {
+          this.$router.back(-1)
+        }
       },
       async forwardFolder (row) {
         if (row.type === '文件夹') {

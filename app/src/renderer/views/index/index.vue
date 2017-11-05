@@ -107,20 +107,14 @@
         this.diskDetail = row
       },
       forward (row) {
-        console.log('enter')
-        if (row.Description === '光盘') return
         let path = row.Name + '\\\\'
+        this.$router.replace({
+          path: `/computer/${path}`
+        })
+        if (row.Description === '光盘') return
         readFolder(path).then(res => {
           this.getFolderInfo(res)
         })
-        /** 未知bug 中转方法 **/
-        for (var i = 0; i < 2; i++) {
-          setTimeout(() => {
-            this.$router.push({
-              path: `/computer/${path}`
-            })
-          }, 1000)
-        }
       },
       normalize (arr) {
         let ret = []
