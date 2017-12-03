@@ -12,7 +12,7 @@
         <label>总容量:</label>
         <p>{{data.Size | toMem}}</p>
         <label>使用率:</label>
-        <Progress :percent="parseInt(data.FreeSpace / data.Size * 100)" status="active"></Progress>
+        <Progress :percent="parseInt((1 - data.FreeSpace / data.Size) * 100)" status="active"></Progress>
         <label v-if="data.FileSystem">文件系统:</label>
         <p>{{data.FileSystem}}</p>
         <label v-if="data.Description">描述:</label>
