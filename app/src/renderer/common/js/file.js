@@ -1,5 +1,9 @@
-import { icon } from '@/common/js/icon'
-import { exec } from 'child_process'
+import {
+  icon
+} from '@/common/js/icon'
+import {
+  exec
+} from 'child_process'
 import iconv from 'iconv-lite'
 import Vue from 'vue'
 const fs = require('fs')
@@ -107,9 +111,9 @@ export function getFileInfo (src) {
  */
 function range (start, count) {
   return Array.apply(0, Array(count))
-      .map((element, index) => {
-        return index + start
-      })
+    .map((element, index) => {
+      return index + start
+    })
 }
 
 /**
@@ -215,7 +219,12 @@ export function deleteFile (src, dialog, alert) {
             if (err) {
               reject(err)
             } else {
-              dialog.showMessageBox({title: infoSuccess, detail: infoSuccess, type: 'info', buttons: ['OK']})
+              dialog.showMessageBox({
+                title: infoSuccess,
+                detail: infoSuccess,
+                type: 'info',
+                buttons: ['OK']
+              })
               resolve()
             }
           })
@@ -264,7 +273,12 @@ export function deleteFolder (src, dialog, alert) {
               dialog.showErrorBox(iconv.decode(stderr, 'GB2312'), iconv.decode(stdout, 'GB2312'))
               reject(iconv.decode(stderr, 'GB2312'))
             } else {
-              dialog.showMessageBox({title: infoSuccess, detail: infoSuccess, type: 'info', buttons: ['OK']})
+              dialog.showMessageBox({
+                title: infoSuccess,
+                detail: infoSuccess,
+                type: 'info',
+                buttons: ['OK']
+              })
               resolve()
             }
           })

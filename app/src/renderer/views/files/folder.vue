@@ -206,10 +206,12 @@
         }
 
         // 从下一层文件夹复制到上一层
+
         if (this.copyParams.dist.length > this.copyParams.src.length) {
           this.copyParams.src = this.copyParams.dist
         }
-         // 复制到下一层的文件夹
+
+        // 复制到下一层的文件夹
         this.copyParams.dist = this.$route.params.id + '\\\\' + this.copyParams.name
         setTimeout(() => {
           this.tableData = JSON.parse(JSON.stringify(this.folderInfo))
